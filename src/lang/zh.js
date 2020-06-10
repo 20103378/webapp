@@ -31,6 +31,9 @@ export default {
     github: '项目地址'
   },
   table: {
+    gas: {
+      gasname: '气体名称',
+    },
     user: {
       username: '用户名',
       password: '密码',

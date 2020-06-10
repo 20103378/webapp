@@ -1,16 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="queryParams.username" :placeholder="$t('table.user.username')" class="filter-item search-item" />
-      <el-input v-model="queryParams.deptName" :placeholder="$t('table.user.dept')" class="filter-item search-item" />
-      <el-date-picker
-        v-model="queryParams.timeRange"
-        :range-separator="null"
-        :start-placeholder="$t('table.user.createTime')"
-        value-format="yyyy-MM-dd"
-        class="filter-item search-item date-range-item"
-        type="daterange"
-      />
+      <el-input v-model="queryParams.gasName" :placeholder="$t('table.gas.gasname')" class="filter-item search-item" />
       <el-button class="filter-item" type="primary" plain @click="search">
         {{ $t('table.search') }}
       </el-button>
@@ -24,8 +15,6 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item v-has-permission="['user:add']" @click.native="add">{{ $t('table.add') }}</el-dropdown-item>
           <el-dropdown-item v-has-permission="['user:delete']" @click.native="batchDelete">{{ $t('table.delete') }}</el-dropdown-item>
-          <el-dropdown-item v-has-permission="['user:reset']" @click.native="resetPassword">{{ $t('table.resetPassword') }}</el-dropdown-item>
-          <el-dropdown-item v-has-permission="['user:export']" @click.native="exportExcel">{{ $t('table.export') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -42,31 +31,9 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" align="center" width="40px" />
-      <el-table-column :label="$t('table.user.username')" prop="username" :show-overflow-tooltip="true" align="center" min-width="120px">
+      <el-table-column :label="$t('table.gas.gasname')" prop="gasname" :show-overflow-tooltip="true" align="center" min-width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('table.user.sex')"
-        :filters="[{ text: $t('common.sex.male'), value: '0' }, { text: $t('common.sex.female'), value: '1' }, { text: $t('common.sex.secret'), value: '2' }]"
-        :filter-method="filterSex"
-        class-name="status-col"
-      >
-        <template slot-scope="{row}">
-          <el-tag :type="row.sex | sexFilter">
-            {{ transSex(row.sex) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.user.email')" :show-overflow-tooltip="true" align="center" min-width="150px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.user.dept')" align="center" min-width="100px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.deptName }}</span>
+          <span>{{ scope.row.gasName }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -88,10 +55,9 @@
       </el-table-column>
       <el-table-column :label="$t('table.operation')" align="center" min-width="150px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <i v-hasPermission="['user:view']" class="el-icon-view table-operation" style="color: #87d068;" @click="view(row)" />
           <i v-hasPermission="['user:update']" class="el-icon-setting table-operation" style="color: #2db7f5;" @click="edit(row)" />
           <i v-hasPermission="['user:delete']" class="el-icon-delete table-operation" style="color: #f50;" @click="singleDelete(row)" />
-          <el-link v-has-no-permission="['user:view','user:update','user:delete']" class="no-perm">
+          <el-link v-has-no-permission="['user:update','user:delete']" class="no-perm">
             {{ $t('tips.noPermission') }}
           </el-link>
         </template>
@@ -105,31 +71,17 @@
       @success="editSuccess"
       @close="editClose"
     />
-    <user-view
-      ref="view"
-      :dialog-visible="userViewVisible"
-      @close="viewClose"
-    />
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
 import UserEdit from './Edit'
-import UserView from './View'
 
 export default {
   name: 'UserManage',
-  components: { Pagination, UserEdit, UserView },
+  components: { Pagination, UserEdit },
   filters: {
-    sexFilter(status) {
-      const map = {
-        0: 'success',
-        1: 'danger',
-        2: 'info'
-      }
-      return map[status]
-    },
     statusFilter(status) {
       const map = {
         0: 'danger',
@@ -144,7 +96,6 @@ export default {
         isVisible: false,
         title: ''
       },
-      userViewVisible: false,
       tableKey: 0,
       loading: false,
       list: null,
@@ -167,24 +118,8 @@ export default {
     this.fetch()
   },
   methods: {
-    transSex(sex) {
-      switch (sex) {
-        case '0':
-          return this.$t('common.sex.male')
-        case '1':
-          return this.$t('common.sex.female')
-        default:
-          return this.$t('common.sex.secret')
-      }
-    },
     filterStatus(value, row) {
       return row.status === value
-    },
-    filterSex(value, row) {
-      return row.sex === value
-    },
-    viewClose() {
-      this.userViewVisible = false
     },
     editClose() {
       this.dialog.isVisible = false
@@ -208,46 +143,9 @@ export default {
       this.$refs.table.clearFilter()
       this.search()
     },
-    exportExcel() {
-      this.$download('system/user/excel', {
-        pageSize: this.pagination.size,
-        pageNum: this.pagination.num,
-        ...this.queryParams
-      }, `user_${new Date().getTime()}.xlsx`)
-    },
     add() {
       this.dialog.title = this.$t('common.add')
       this.dialog.isVisible = true
-    },
-    resetPassword() {
-      if (!this.selection.length) {
-        this.$message({
-          message: this.$t('tips.noDataSelected'),
-          type: 'warning'
-        })
-        return
-      }
-      this.$confirm(this.$t('tips.confirmRestPassword'), this.$t('common.tips'), {
-        confirmButtonText: this.$t('common.confirm'),
-        cancelButtonText: this.$t('common.cancel'),
-        type: 'warning'
-      }).then(() => {
-        const userNames = []
-        this.selection.forEach((u) => {
-          userNames.push(u.username)
-        })
-        this.$put('system/user/password/reset', {
-          usernames: userNames.join(',')
-        }).then(() => {
-          this.$message({
-            message: this.$t('tips.resetPasswordSuccess'),
-            type: 'success'
-          })
-          this.clearSelections()
-        })
-      }).catch(() => {
-        this.clearSelections()
-      })
     },
     singleDelete(row) {
       this.$refs.table.toggleRowSelection(row, true)
@@ -261,29 +159,16 @@ export default {
         })
         return
       }
-      let contain = false
       this.$confirm(this.$t('tips.confirmDelete'), this.$t('common.tips'), {
         confirmButtonText: this.$t('common.confirm'),
         cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(() => {
-        const userIds = []
+        const gasIds = []
         this.selection.forEach((u) => {
-          if (u.userId === this.currentUser.userId) {
-            contain = true
-            return
-          }
-          userIds.push(u.userId)
+          gasIds.push(u.id)
         })
-        if (contain) {
-          this.$message({
-            message: this.$t('tips.containCurrentUser'),
-            type: 'warning'
-          })
-          this.clearSelections()
-        } else {
-          this.delete(userIds)
-        }
+        this.delete(gasIds)
       }).catch(() => {
         this.clearSelections()
       })
@@ -291,9 +176,9 @@ export default {
     clearSelections() {
       this.$refs.table.clearSelection()
     },
-    delete(userIds) {
+    delete(gasIds) {
       this.loading = true
-      this.$delete(`system/user/${userIds}`).then(() => {
+      this.$delete(`cable/gas/${gasIds}`).then(() => {
         this.$message({
           message: this.$t('tips.deleteSuccess'),
           type: 'success'
@@ -301,22 +186,10 @@ export default {
         this.search()
       })
     },
-    view(row) {
-      this.$refs.view.setUser(row)
-      this.userViewVisible = true
-    },
     edit(row) {
-      let roleId = []
-      if (row.roleId && typeof row.roleId === 'string') {
-        roleId = row.roleId.split(',')
-        row.roleId = roleId
-      }
-      this.$get(`system/user/${row.userId}`).then((r) => {
-        row.deptIds = r.data.data
-        this.$refs.edit.setUser(row)
-        this.dialog.title = this.$t('common.edit')
-        this.dialog.isVisible = true
-      })
+      this.$refs.edit.setUser(row)
+      this.dialog.title = this.$t('common.edit')
+      this.dialog.isVisible = true
     },
     fetch(params = {}) {
       params.pageSize = this.pagination.size
@@ -326,7 +199,7 @@ export default {
         params.createTimeTo = this.queryParams.timeRange[1]
       }
       this.loading = true
-      this.$get('system/user', {
+      this.$get('cable/gas', {
         ...params
       }).then((r) => {
         const data = r.data.data

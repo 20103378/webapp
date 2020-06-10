@@ -31,6 +31,9 @@ export default {
     github: 'Github Repository'
   },
   table: {
+    gas: {
+      gasname: 'GasName'
+    },
     user: {
       username: 'UserName',
       password: 'Password',
