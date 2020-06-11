@@ -31,8 +31,19 @@ export default {
     github: 'Github Repository'
   },
   table: {
+    updateTime: 'updateTime',
+    createTime: 'createTime',
+    status:'status',
     gas: {
-      gasname: 'GasName'
+      gasname: 'GasName',
+    },
+    device: {
+      devicename: 'deviceName',
+      deviceId: 'deviceId',
+      latitude: 'latitude',
+      longitude: 'longitude',
+      topic: 'topic',
+      samplePeriod: 'samplePeriod',
     },
     user: {
       username: 'UserName',
@@ -302,6 +313,7 @@ export default {
     executeFail: 'Fail'
   },
   rules: {
+    invalidNumber: 'Please enter an number',
     require: 'Can\'t be empty',
     range2to10: '2 to 10 characters in length',
     range3to10: '3 to 10 characters in length',

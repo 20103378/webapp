@@ -1,20 +1,21 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="queryParams.gasName" :placeholder="$t('table.gas.gasname')" class="filter-item search-item" />
+      <el-input v-model="queryParams.deviceId" :placeholder="$t('table.device.deviceId')" class="filter-item search-item" />
+      <el-input v-model="queryParams.deviceName" :placeholder="$t('table.device.devicename')" class="filter-item search-item" />
       <el-button class="filter-item" type="primary" plain @click="search">
         {{ $t('table.search') }}
       </el-button>
       <el-button class="filter-item" type="warning" plain @click="reset">
         {{ $t('table.reset') }}
       </el-button>
-      <el-dropdown v-has-any-permission="['gas:add','gas:delete']" trigger="click" class="filter-item">
+      <el-dropdown v-has-any-permission="['device:add','device:delete']" trigger="click" class="filter-item">
         <el-button>
           {{ $t('table.more') }}<i class="el-icon-arrow-down el-icon--right" />
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-has-permission="['gas:add']" @click.native="add">{{ $t('table.add') }}</el-dropdown-item>
-          <el-dropdown-item v-has-permission="['gas:delete']" @click.native="batchDelete">{{ $t('table.delete') }}</el-dropdown-item>
+          <el-dropdown-item v-has-permission="['device:add']" @click.native="add">{{ $t('table.add') }}</el-dropdown-item>
+          <el-dropdown-item v-has-permission="['device:delete']" @click.native="batchDelete">{{ $t('table.delete') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -31,11 +32,37 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" align="center" width="40px" />
-      <el-table-column :label="$t('table.gas.gasname')" prop="gasname" :show-overflow-tooltip="true" align="center" min-width="120px">
+      <el-table-column :label="$t('table.device.deviceId')" prop="deviceId" :show-overflow-tooltip="true" align="center" min-width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.gasName }}</span>
+          <span>{{ scope.row.deviceId }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.device.devicename')" prop="devicename" :show-overflow-tooltip="true" align="center" min-width="120px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.deviceName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.device.longitude')" prop="longitude" :show-overflow-tooltip="true" align="center" min-width="120px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.longitude }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.device.latitude')" prop="latitude" :show-overflow-tooltip="true" align="center" min-width="120px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.latitude }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.device.samplePeriod')" prop="samplePeriod" :show-overflow-tooltip="true" align="center" min-width="120px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.samplePeriod }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.device.topic')" prop="topic" :show-overflow-tooltip="true" align="center" min-width="120px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.topic }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         :label="$t('table.status')"
         :filters="[{ text: $t('common.status.valid'), value: '1' }, { text: $t('common.status.invalid'), value: '0' }]"
@@ -48,23 +75,29 @@
           </el-tag>
         </template>
       </el-table-column>
+<!--      <el-table-column :label="$t('table.device.createTime')" prop="createTime" align="center" min-width="180px" sortable="custom">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ scope.row.createTime }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column :label="$t('table.updateTime')" prop="updateTime" align="center" min-width="180px" sortable="custom">
         <template slot-scope="scope">
           <span>{{ scope.row.updateTime }}</span>
         </template>
       </el-table-column>
+
       <el-table-column :label="$t('table.operation')" align="center" min-width="150px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <i v-hasPermission="['gas:update']" class="el-icon-setting table-operation" style="color: #2db7f5;" @click="edit(row)" />
-          <i v-hasPermission="['gas:delete']" class="el-icon-delete table-operation" style="color: #f50;" @click="singleDelete(row)" />
-          <el-link v-has-no-permission="['gas:update','gas:delete']" class="no-perm">
+          <i v-hasPermission="['device:update']" class="el-icon-setting table-operation" style="color: #2db7f5;" @click="edit(row)" />
+          <i v-hasPermission="['device:delete']" class="el-icon-delete table-operation" style="color: #f50;" @click="singleDelete(row)" />
+          <el-link v-has-no-permission="['device:update','device:delete']" class="no-perm">
             {{ $t('tips.noPermission') }}
           </el-link>
         </template>
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pagination.num" :limit.sync="pagination.size" @pagination="search" />
-    <gas-edit
+    <device-edit
       ref="edit"
       :dialog-visible="dialog.isVisible"
       :title="dialog.title"
@@ -76,11 +109,11 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import GasEdit from './Edit'
+import DeviceEdit from './Edit'
 
 export default {
   name: 'UserManage',
-  components: { Pagination, GasEdit },
+  components: { Pagination, DeviceEdit },
   filters: {
     statusFilter(status) {
       const map = {
@@ -164,11 +197,11 @@ export default {
         cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(() => {
-        const gasIds = []
+        const deviceIds = []
         this.selection.forEach((u) => {
-          gasIds.push(u.id)
+          deviceIds.push(u.id)
         })
-        this.delete(gasIds)
+        this.delete(deviceIds)
       }).catch(() => {
         this.clearSelections()
       })
@@ -176,9 +209,9 @@ export default {
     clearSelections() {
       this.$refs.table.clearSelection()
     },
-    delete(gasIds) {
+    delete(deviceIds) {
       this.loading = true
-      this.$delete(`cable/gas/${gasIds}`).then(() => {
+      this.$delete(`cable/device/${deviceIds}`).then(() => {
         this.$message({
           message: this.$t('tips.deleteSuccess'),
           type: 'success'
@@ -187,16 +220,19 @@ export default {
       })
     },
     edit(row) {
-      this.$refs.edit.setGas(row)
+      this.$refs.edit.setDevice(row)
       this.dialog.title = this.$t('common.edit')
       this.dialog.isVisible = true
     },
     fetch(params = {}) {
       params.pageSize = this.pagination.size
       params.pageNum = this.pagination.num
-
+      // if (this.queryParams.timeRange) {
+      //   params.createTimeFrom = this.queryParams.timeRange[0]
+      //   params.createTimeTo = this.queryParams.timeRange[1]
+      // }
       this.loading = true
-      this.$get('cable/gas', {
+      this.$get('cable/device', {
         ...params
       }).then((r) => {
         const data = r.data.data

@@ -31,8 +31,19 @@ export default {
     github: '项目地址'
   },
   table: {
+    updateTime: '更新时间',
+    createTime: '创建时间',
+    status:'状态',
     gas: {
       gasname: '气体名称',
+    },
+    device: {
+      devicename: '设备名称',
+      deviceId: '设备ID',
+      latitude: '维度',
+      longitude: '精度',
+      topic: '主题',
+      samplePeriod: '采样周期',
     },
     user: {
       username: '用户名',
@@ -303,6 +314,8 @@ export default {
   },
   rules: {
     require: '不能为空',
+    invalidNumber: '必须是数字',
+    range1to20: '长度在 1 到 20 个字符',
     range2to10: '长度在 2 到 10 个字符',
     range3to10: '长度在 3 到 10 个字符',
     range3to20: '长度在 3 到 20 个字符',
