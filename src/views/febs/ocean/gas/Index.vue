@@ -79,7 +79,7 @@ import Pagination from '@/components/Pagination'
 import GasEdit from './Edit'
 
 export default {
-  name: 'UserManage',
+  name: 'GasManage',
   components: { Pagination, GasEdit },
   filters: {
     statusFilter(status) {

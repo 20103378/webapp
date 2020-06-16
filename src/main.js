@@ -1,5 +1,5 @@
 import Vue from 'vue'
-
+import BaiduMap from 'vue-baidu-map'
 import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 import Element from 'element-ui'
 import './styles/element-variables.scss'
@@ -28,6 +28,9 @@ Plugins.map((plugin) => {
   Vue.use(plugin)
 })
 
+Vue.use(BaiduMap, {
+  ak: 'eH7r6iImHrGVgOxc06zMi1z6TS1A171I'
+});
 Vue.use(Element, {
   i18n: (key, value) => i18n.t(key, value)
 })

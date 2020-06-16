@@ -34,6 +34,8 @@ export default {
     updateTime: '更新时间',
     createTime: '创建时间',
     status:'状态',
+    startTime: '开始时间',
+    endTime: '结束时间',
     gas: {
       gasname: '气体名称',
     },

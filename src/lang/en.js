@@ -34,6 +34,8 @@ export default {
     updateTime: 'updateTime',
     createTime: 'createTime',
     status:'status',
+    startTime: 'startTime',
+    endTime: 'endTime',
     gas: {
       gasname: 'GasName',
     },

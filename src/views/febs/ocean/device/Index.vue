@@ -112,7 +112,7 @@ import Pagination from '@/components/Pagination'
 import DeviceEdit from './Edit'
 
 export default {
-  name: 'UserManage',
+  name: 'DeviceManage',
   components: { Pagination, DeviceEdit },
   filters: {
     statusFilter(status) {
